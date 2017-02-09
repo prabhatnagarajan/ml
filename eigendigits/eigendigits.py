@@ -43,12 +43,18 @@ def mean_subtract(matrix):
 
 def covariance_matrix(matrix):
 	mat = mean_subtract(matrix)
+	print "covariance matrix shape"
+	print np.shape(matrix)
 	return np.dot(mat, mat.transpose())/np.shape(matrix)[0]
 
 def get_eigenvalues(matrix):
-	num_rows = np.shape(matrix)[0]
-	num_cols = np.shape(matrix)[1]
-	eigen_info = np.linalg.eig(matrix)
+	print "printing mat shape"
+	print np.shape(matrix)
+	print "print mat"
+	mat =  np.dot(matrix.transpose(), matrix)
+	print np.shape(mat)
+	print matrix
+	eigen_info = np.linalg.eig(np.dot(matrix.transpose(),matrix))
 	return eigen_info
 
 def main():
@@ -68,9 +74,8 @@ def main():
 	images = sample_images(testImages, 3)
 	images = vectorize_images(images)
 	cov = covariance_matrix(images)
-	print cov
-	eigen_info = get_eigenvalues(cov)
-	print len(eigen_info)
+	eigen_info = get_eigenvalues(images)
+	print eigen_info
 
 
 if __name__ == '__main__':
