@@ -47,7 +47,7 @@ def hw1FindEigendigits(matrix):
 		for k in range(len(eigenmap[sorted_eigenvals[i]])):
 			sorted_eigenvectors[:, count] = eigenmap[sorted_eigenvals[i]][k]
 			count = count + 1
-	return (sorted_eigenvals, sorted_eigenvectors)
+	return (mean_column(matrix), sorted_eigenvectors)
 
 def mean_column(matrix):
 	return np.mean(matrix, axis=1)
@@ -85,16 +85,20 @@ def main():
 	# 60000 labels
 	trainLabels = load("trainLabels.bin", (1, 60000))
 
-	images = sample_images(trainImages, 5)
+	images = sample_images(trainImages, 1000)
 	images = vectorize_images(images)
 	#cov = covariance_matrix(images)
 	#NOTE: Maybe subtract mean before getting eigenvalues
 	eigen_info = hw1FindEigendigits(images)
-	print eigen_info[0]
-	print np.shape(eigen_info[1])
+	#print eigen_info[0]
+	#print "shape"
+	#print np.shape(eigen_info[1][:,])
 	#hw1FindEigendigits(trainImages)
+	thing = np.reshape(eigen_info[1][:,0], (28, 28, 1))
+	print thing
+	plt.imshow(thing[:, :, 0])
 	#plt.imshow(trainImages[:, :, 1])
-	#plt.show()
+	plt.show()
 
 if __name__ == '__main__':
 	main()
