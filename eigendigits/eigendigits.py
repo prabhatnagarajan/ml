@@ -34,14 +34,20 @@ def hw1FindEigendigits(matrix):
 	eigenmap = dict()
 	for i in range(len(eigen_info[0])):
 		if eigen_info[0][i] in eigenmap:
-			eigenmap[eigen_info[0][i]].append(eigen_info[1][i])
+			eigenmap[eigen_info[0][i]].append(eigenvectors[i])
 		else:
 			vectors = list()
-			vectors.append(eigen_info[1][i])
+			vectors.append(eigenvectors[i])
 			eigenmap[eigen_info[0][i]] = vectors
 	sorted_eigenvals = sorted(eigenmap.keys())
-	print sorted_eigenvals
-	return (eigen_info[0], eigenvectors)
+	sorted_eigenvals.reverse()
+	sorted_eigenvectors = np.zeros((len(eigenvectors[0]), len(eigenvectors)))
+	count = 0
+	for i in range(len(sorted_eigenvals)):
+		for k in range(len(eigenmap[sorted_eigenvals[i]])):
+			sorted_eigenvectors[:, count] = eigenmap[sorted_eigenvals[i]][k]
+			count = count + 1
+	return (sorted_eigenvals, sorted_eigenvectors)
 
 def mean_column(matrix):
 	return np.mean(matrix, axis=1)
@@ -85,8 +91,7 @@ def main():
 	#NOTE: Maybe subtract mean before getting eigenvalues
 	eigen_info = hw1FindEigendigits(images)
 	print eigen_info[0]
-	for i in range(len(eigen_info[0]) - 1):
-		print eigen_info[0][i] >= eigen_info[0][i + 1]
+	print np.shape(eigen_info[1])
 	#hw1FindEigendigits(trainImages)
 	#plt.imshow(trainImages[:, :, 1])
 	#plt.show()
