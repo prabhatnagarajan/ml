@@ -75,6 +75,12 @@ def get_eigenvalues(matrix):
 def a_transpose_a(matrix):
 	return np.dot(matrix.transpose(),matrix)
 
+def project(vector, mean, matrix):
+	return np.dot(matrix.transpose(), vector - mean)
+
+def unproject(vector, mean, matrix):
+	return np.dot(vector, matrix.transpose()) + mean
+
 def main():
 	#10000 28 x 28 test images
 	testImages = load("testImages.bin", (28, 28, 10000))
@@ -85,20 +91,35 @@ def main():
 	# 60000 labels
 	trainLabels = load("trainLabels.bin", (1, 60000))
 
-	images = sample_images(trainImages, 1000)
+	images = sample_images(trainImages, 525)
 	images = vectorize_images(images)
-	#cov = covariance_matrix(images)
-	#NOTE: Maybe subtract mean before getting eigenvalues
 	eigen_info = hw1FindEigendigits(images)
-	#print eigen_info[0]
-	#print "shape"
-	#print np.shape(eigen_info[1][:,])
-	#hw1FindEigendigits(trainImages)
+	mean = eigen_info[0]
+	eigen_mat = eigen_info[1]
+	print "eigenshape"
+	print np.shape(eigen_mat)
 	thing = np.reshape(eigen_info[1][:,0], (28, 28, 1))
-	print thing
-	plt.imshow(thing[:, :, 0])
+	
+	#print thing
+	#plt.imshow(thing[:, :, 0])
 	#plt.imshow(trainImages[:, :, 1])
-	plt.show()
+	#plt.show()
+	testim = sample_images(testImages, 5)
+	testim = vectorize_images(testim)
+	print np.shape(testim)
+	for i in range(5):
+		projection = project(testim[:,i], mean, eigen_mat)
+		print "projection"
+		print np.shape(projection)
+		img = np.reshape(testim[:,i], (28, 28, 1))
+		plt.imshow(img[:, :, 0])
+		plt.show()		
+		print "unprojection"
+		unprojection = unproject(projection, mean, eigen_mat)
+		print np.shape(unprojection)
+		unprojection = np.reshape(unprojection, (28, 28, 1))
+		plt.imshow(unprojection[:, :, 0])
+		plt.show()
 
 if __name__ == '__main__':
 	main()
