@@ -13,14 +13,16 @@ vector of A,
 eigenvectors of the covariance matrix of A (after the mean has been subtracted). 
 -Columns of V are sorted in descending order by eigenvalue
 '''
-def sample_images(images, num_samples):
+def sample_images(images, labels, num_samples):
 	indices = np.random.randint(np.shape(images)[2], size=num_samples)
 	sample = np.zeros((28, 28, num_samples))
+	label = np.zeros(num_samples, dtype=np.int8)
 	for i in range(len(indices)):
 		sample[:,:,i] = images[:,:,indices[i]]
+		label[i] = labels[0][indices[i]]
 	#print sample
 	#print "that was sample"
-	return sample
+	return (sample, label)
 
 def vectorize_images(images):
 	return np.reshape(images, (28 * 28, np.shape(images)[2]))
@@ -81,6 +83,13 @@ def project(vector, mean, matrix):
 def unproject(vector, mean, matrix):
 	return np.dot(vector, matrix.transpose()) + mean
 
+def project_vectors(vectors, mean, matrix):
+	num_vectors = np.shape(vectors)[1]
+	projection = np.zeros((np.shape(matrix)[1], num_vectors,))
+	for i in range(num_vectors):
+		projection[:, i] = project(vectors[i], mean, matrix)
+	return projection
+
 def main():
 	#10000 28 x 28 test images
 	testImages = load("testImages.bin", (28, 28, 10000))
@@ -91,7 +100,10 @@ def main():
 	# 60000 labels
 	trainLabels = load("trainLabels.bin", (1, 60000))
 
-	images = sample_images(trainImages, 525)
+	sample = sample_images(trainImages, trainLabels, 525)
+	images = sample[0]
+	print np.shape(images)
+	labels = sample[1]
 	images = vectorize_images(images)
 	eigen_info = hw1FindEigendigits(images)
 	mean = eigen_info[0]
@@ -104,7 +116,7 @@ def main():
 	#plt.imshow(thing[:, :, 0])
 	#plt.imshow(trainImages[:, :, 1])
 	#plt.show()
-	testim = sample_images(testImages, 5)
+	testim = sample_images(testImages, testLabels, 5)[0]
 	testim = vectorize_images(testim)
 	print np.shape(testim)
 	for i in range(5):
