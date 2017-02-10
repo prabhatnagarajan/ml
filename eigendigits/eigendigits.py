@@ -90,9 +90,6 @@ def project_vectors(vectors, mean, matrix):
 		projection[:, i] = project(vectors[:, i], mean, matrix)
 	return projection
 
-def distance(a, b):
-	
-
 '''
 returns labels
 '''
@@ -100,11 +97,22 @@ def kNN(K, sample_projections, sample_labels, test_projections):
 	labels = []
 	for i in range(np.shape(test_projections)[1]):
 		test_vector = test_projections[:, i]
-		for i range(np.shape(sample_projections)[i]):
-			train_vector = np.shape(sample_projections[:, i])
-			dist = distance(test_vector)
-
-
+		distances = []
+		for i in range(np.shape(sample_projections)[1]):
+			train_vector = sample_projections[:, i]
+			dist = np.linalg.norm(test_vector - train_vector)
+			distances.append((dist, i))
+		distances = sorted(distances)
+		#get K nearest neighbors
+		nearest_neighbors = distances[0:K]
+		#tally votes
+		votes = np.zeros(10, dtype=np.int8)
+		for i in range(K):
+			votes[sample_labels[nearest_neighbors[i][1]]] = votes[sample_labels[nearest_neighbors[i][1]]] + 1
+		#Pick vote majority
+		decision = np.argmax(votes)
+		labels.append(decision)
+	return labels
 '''
 args: 
 sample - tuple of training sample and corresponding labels
@@ -122,6 +130,16 @@ def classify(sample, test, mean, eigen_mat, K):
 	print np.shape(test_vectors)
 	test_projections = project_vectors(test_vectors, mean, eigen_mat)
 	labels = kNN(K, sample_projections, sample[1], test_projections)
+	test_labels = test[1]
+	success = 0
+	fail = 0
+	test_labels = test_labels.reshape((np.shape(test_labels)[1]))
+	for i in range(len(test_labels)):
+		if test_labels[i] == labels[i]:
+			success = success + 1
+		else:
+			fail = fail + 1
+	return float(success)/float(success + fail)
 
 def main():
 	#10000 28 x 28 test images
@@ -133,7 +151,7 @@ def main():
 	# 60000 labels
 	trainLabels = load("trainLabels.bin", (1, 60000))
 
-	sample = sample_images(trainImages, trainLabels, 525)
+	sample = sample_images(trainImages, trainLabels, 1000)
 	images = sample[0]
 	print np.shape(images)
 	labels = sample[1]
@@ -155,13 +173,12 @@ def main():
 		img = np.reshape(testim[:,i], (28, 28, 1))
 		#plt.imshow(img[:, :, 0])
 		#plt.show()		
-		print "unprojection"
 		unprojection = unproject(projection, mean, eigen_mat)
 		print np.shape(unprojection)
 		unprojection = np.reshape(unprojection, (28, 28, 1))
 		#plt.imshow(unprojection[:, :, 0])
 		#plt.show()
-	classify(sample, (testImages, testLabels), mean, eigen_mat, 5)
+	print classify(sample, (testImages, testLabels), mean, eigen_mat, 10)
 
 if __name__ == '__main__':
 	main()
