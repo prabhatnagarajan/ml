@@ -120,14 +120,11 @@ test - test_data and labels
 We project sample into eigenspace and do k Nearest Neighbors
 '''
 def classify(sample, test, mean, eigen_mat, K):
-	print "classifying"
 	sample_projections = []
 	train_images = sample[0]
 	train_images = vectorize_images(train_images)
 	sample_projections = project_vectors(train_images, mean, eigen_mat)
 	test_vectors = vectorize_images(test[0])
-	print "shape of test vectors"
-	print np.shape(test_vectors)
 	test_projections = project_vectors(test_vectors, mean, eigen_mat)
 	labels = kNN(K, sample_projections, sample[1], test_projections)
 	test_labels = test[1]
@@ -151,34 +148,33 @@ def main():
 	# 60000 labels
 	trainLabels = load("trainLabels.bin", (1, 60000))
 
-	sample = sample_images(trainImages, trainLabels, 1000)
+	sample = sample_images(trainImages, trainLabels, 200)
 	images = sample[0]
-	print np.shape(images)
 	labels = sample[1]
 	images = vectorize_images(images)
 	eigen_info = hw1FindEigendigits(images)
 	mean = eigen_info[0]
 	eigen_mat = eigen_info[1]
-	thing = np.reshape(eigen_info[1][:,0], (28, 28, 1))
-	
-	#print thing
-	#plt.imshow(thing[:, :, 0])
-	#plt.imshow(trainImages[:, :, 1])
-	#plt.show()
+	#Display Eigenvectors
+	for i in np.random.randint(np.shape(eigen_mat)[1], size=5):
+		eigenimg = np.reshape(eigen_mat[:,i], (28, 28, 1))
+		#plt.imshow(eigenimg[:, :, 0])
+		#plt.show()
+
 	testim = sample_images(testImages, testLabels, 5)[0]
 	testim = vectorize_images(testim)
-	print np.shape(testim)
-	for i in range(5):
+	for i in np.random.randint(np.shape(testim)[1], size=5):
 		projection = project(testim[:,i], mean, eigen_mat)
 		img = np.reshape(testim[:,i], (28, 28, 1))
-		#plt.imshow(img[:, :, 0])
+		#plt.imshow(img[:, :, 0], cmap='gray')
 		#plt.show()		
 		unprojection = unproject(projection, mean, eigen_mat)
-		print np.shape(unprojection)
 		unprojection = np.reshape(unprojection, (28, 28, 1))
-		#plt.imshow(unprojection[:, :, 0])
+		#plt.imshow(unprojection[:, :, 0], cmap='gray')
 		#plt.show()
-	print classify(sample, (testImages, testLabels), mean, eigen_mat, 10)
+	easy =  classify(sample, (testImages[:,:,5000:10000], testLabels[:,5000:]), mean, eigen_mat, 5)
+	hard = classify(sample, (testImages[:,:,0:5000], testLabels[:,0:5000]), mean, eigen_mat, 5)
+	print str(easy) + " " + str(hard)
 
 if __name__ == '__main__':
 	main()
