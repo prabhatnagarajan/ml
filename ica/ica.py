@@ -1,6 +1,7 @@
 from load import load
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from pdb import set_trace
 import scipy.io
 from scipy.io.wavfile import write
@@ -46,8 +47,29 @@ def main():
 	#X = mix([0,1,2], A, sounds)
 	X = np.dot(A, sounds)
 	Y = ica(X, 3, 0.01)
+	print " "
+	print " "
 	print sounds
+	print " "
+	print " "
 	print Y
+
+	fig = plt.figure()
+	#ax = fig.add_subplot(11)
+	#X = np.arange(0, 5)
+	#Y = np.arange(0, 5)
+	plt.plot(range(0,40),X[0])
+	#X, Y = np.meshgrid(X, Y)
+	#surf = ax.plot_surface(X, Y, reward_fxn, rstride=1, cstride=2, cmap=cm.coolwarm,
+	#  linewidth=0, antialiased=False)
+	#fig.suptitle('Reward Function for Gridworld', fontsize=20)
+	#plt.xlabel('Row', fontsize=18)
+	#plt.ylabel('Column', fontsize=16)
+	#fig.savefig('reward.jpeg')
+	plt.show()
+	plt.plot(range(0,40),Y[0])
+	plt.show()
+
 
 def play(data, fname):
 	scaled = np.int16(data/np.max(np.abs(data)) * 32767)
