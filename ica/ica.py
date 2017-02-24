@@ -19,12 +19,12 @@ def ica(X, n, learning_rate):
 	for i in range(n):
 		for j in range(m):
 			W[i][j] = np.random.uniform(0, 0.1)
-	for x in range(925):
+	for x in range(1000):
 		#Step 3 - Calculate Y=WX, Y is our current estimate of the source signals
 		Y = W.dot(X)
 		t = np.shape(Y)[1]
 		#Step 4 - Calculate Z 
-		Z = np.zeros((m, t))
+		Z = np.zeros((n, t))
 		for i in range(n):
 			for j in range(t):
 				Z[i, j] = 1/(1 + np.exp(-Y[i,j]))
@@ -40,7 +40,8 @@ def main():
 	sounds = load("data/icaTest.mat", "U")
 	print np.shape(sounds)
 	A = load("data/icaTest.mat", "A")
-	print np.shape(A)
+	print "A is"
+	print A
 	#Step 2 - mix the data
 	#X = mix([0,1,2], A, sounds)
 	X = np.dot(A, sounds)
