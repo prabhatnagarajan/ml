@@ -19,7 +19,7 @@ def ica(X, n, learning_rate):
 	for i in range(n):
 		for j in range(m):
 			W[i][j] = np.random.uniform(0, 0.1)
-	for i in range(10):
+	for i in range(925):
 		#Step 3 - Calculate Y=WX, Y is our current estimate of the source signals
 		Y = W.dot(X)
 		t = np.shape(Y)[1]
@@ -32,20 +32,19 @@ def ica(X, n, learning_rate):
 		gradient = learning_rate * np.dot(np.eye(n) + np.dot(np.full((m, t), 1.0) - 2 * Z, np.transpose(Y)), W)
 		#Step 6
 		W = W + gradient
-		print W
 
+	print W
 	return Y
 
 def main():
 	#Step 1 - Load the data
-	sounds = load("data/sounds.mat", "sounds")
+	sounds = load("data/icaTest.mat", "U")
+	print np.shape(sounds)
+	A = load("data/icaTest.mat", "A")
+	print np.shape(A)
 	#Step 2 - mix the data
-	X = mix([3,4], [[0.33, 0.67],[0.67, 0.33]], sounds)
-	play(sounds[3], "sounds3.wav")
-	play(sounds[4], "sounds4.wav")
-	play(X[0], "mix1.wav")
-	play(X[1], "mix2.wav")
-	Y = ica(X, 2, 0.005)
+	X = mix([0,1,2], A, sounds)
+	Y = ica(X, 3, 0.01)
 
 def play(data, fname):
 	scaled = np.int16(data/np.max(np.abs(data)) * 32767)
