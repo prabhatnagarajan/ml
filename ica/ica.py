@@ -12,6 +12,7 @@ def mix(inputs, A, sounds):
 		U[i] = sounds[inputs[i]]
 	return np.dot(A, U)
 
+#Part 3 - Implement the algorithm
 def ica(X, n, learning_rate):
 	m = np.shape(X)[0]
 	#n x m matrix W
@@ -45,6 +46,7 @@ def main():
 	print A
 	#Step 2 - mix the data
 	#X = mix([0,1,2], A, sounds)
+	#Implement the algorithm
 	X = np.dot(A, sounds)
 	Y = ica(X, 3, 0.01)
 	print " "
@@ -53,23 +55,33 @@ def main():
 	print " "
 	print " "
 	print Y
-
-	fig = plt.figure()
-	#ax = fig.add_subplot(11)
-	#X = np.arange(0, 5)
-	#Y = np.arange(0, 5)
-	plt.plot(range(0,40),X[0])
-	#X, Y = np.meshgrid(X, Y)
-	#surf = ax.plot_surface(X, Y, reward_fxn, rstride=1, cstride=2, cmap=cm.coolwarm,
-	#  linewidth=0, antialiased=False)
-	#fig.suptitle('Reward Function for Gridworld', fontsize=20)
-	#plt.xlabel('Row', fontsize=18)
-	#plt.ylabel('Column', fontsize=16)
-	#fig.savefig('reward.jpeg')
-	plt.show()
-	plt.plot(range(0,40),Y[0])
+	
+	fig, fig2 = plt.subplots(len(sounds), sharex = True, sharey = True)
+	for i in range(len(sounds)):
+	  fig2[i].plot(sounds[i])
+	fig.subplots_adjust(hspace = 0)
+	fig.suptitle('Original Signals (icaTest Data)', fontsize=20)
+	plt.xlabel('Time Step', fontsize=18)
+  	plt.ylabel('Signal Values', fontsize=16)
 	plt.show()
 
+	fig, fig2 = plt.subplots(len(sounds), sharex = True, sharey = True)
+	for i in range(len(sounds)):
+	  fig2[i].plot(X[i])
+	fig.subplots_adjust(hspace = 0)
+	fig.suptitle('Mixed Signals Signals (icaTest Data)', fontsize=20)
+	plt.xlabel('Time Step', fontsize=18)
+  	plt.ylabel('Signal Values', fontsize=16)
+	plt.show()
+
+	fig, fig2 = plt.subplots(len(sounds), sharex = True, sharey = True)
+	for i in range(len(sounds)):
+	  fig2[i].plot(Y[i])
+	fig.subplots_adjust(hspace = 0)
+	fig.suptitle('Reconstructed Signals (icaTest Data)', fontsize=20)
+	plt.xlabel('Time Step', fontsize=18)
+  	plt.ylabel('Signal Values', fontsize=16)
+	plt.show()
 
 def play(data, fname):
 	scaled = np.int16(data/np.max(np.abs(data)) * 32767)
