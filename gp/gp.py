@@ -21,8 +21,14 @@ def main():
 	# plt.plot(data + 1)
 	plt.show()
 
-# #Gets mean and covariance, adapted from Marsland's code in his GP Chapter
-# def gpr(time, data, test_times, params):
+#Gets mean and covariance, similar to Marsland's algo in his GP Chapter
+def gpr(time, data, test_times, params):
+	K = kernel(time, params[0], params[1], params[2])[0]
+	kstar = kernel2(time, test_times, params[0], params[1], params[2])
+	kstarstar = kernel2(test_times, test_times, params[0], params[1], params[2])
+	mean = np.tranpose(kstar).dot(np.inv(K)).dot(data)
+	set_trace()
+	covariance = kstarstar - np.tranpose(kstar).dot(np.inv(K)).dot(kstar)
 
 def k(x1, x2, sigma_f, l):
 	return math.pow(sigma_f, 2) * np.exp((-1) * (1/(2 * l * l)) * math.pow(x1 - x2, 2))
@@ -74,6 +80,17 @@ def kernel(time, sigma_f, sigma_l, sigma_n):
 	delta_l = np.dot(kernel, (-0.5) * np.exp(sigma_l) * get_sq_diff_mat(time))
 	delta_n = noise
 	return  (kernel + noise, delta_f, delta_l, delta_n)
+
+def kernel2(time, time2, sigma_f, sigma_l, sigma_n):
+	kernel = np.exp(sigma_f) * np.exp((-0.5) * np.exp(sigma_l) * get_sq_diff_mat2(time, time2))
+	return  kernel
+
+def get_sq_diff_mat2(time, time2):
+	mat = np.zeros((len(time), len(time2)))
+	for i in range(len(time)):
+		for j in range(len(time2)):
+			mat[i,j] = math.pow(time[i] - time2[j], 2)
+	return mat
 
 if __name__ == '__main__':
 	main()
