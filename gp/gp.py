@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 from extract import *
 import math
 from pdb import set_trace
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, WhiteKernel
+
 
 filename = "data_GP/AG/block1-UNWEIGHTED-SLOW-NONDOMINANT-RANDOM/20161213203046-59968-right-speed_0.500.csv"
 time, data = extract_data(filename)
@@ -16,7 +15,6 @@ def main():
 		regression.append(i+1)
 
 	params = gradient_ascent(time[0::10], data[0::10],[1.0, 1.0, 0.1], np.array([0.0001, 0.0001, 0.00001]))
-	# params = np.array([-0.25, 0.1, 0.0067])
 	mean, covariance = gpr(time[0::10], data[0::10], time[1::2], params)
 
 	bottom = mean -  np.sqrt(np.diag(covariance))
