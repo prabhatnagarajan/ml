@@ -15,15 +15,10 @@ def main():
 	for i in data:
 		regression.append(i+1)
 
-	params = gradient_ascent(time[0::10], data[0::10],[0.05, 0.05, 0.03], np.array([0.0001, 0.0001, 0.00001]))
-	#params = np.array([-1.0, 0.2, 0.0067])
+	params = gradient_ascent(time[0::10], data[0::10],[1.0, 1.0, 0.1], np.array([0.0001, 0.0001, 0.00001]))
 	# params = np.array([-0.25, 0.1, 0.0067])
 	mean, covariance = gpr(time[0::10], data[0::10], time[1::2], params)
 
-	# kernel = 0.01 * RBF(length_scale = 0.05, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level = 0.0001, noise_level_bounds=(1e-10, 1e+1))
-	# gp = GaussianProcessRegressor(kernel=kernel, alpha = 0.0).fit(time[0::10].reshape(-1,1), data[0::10].reshape(-1, 1))
-	# mean, covariance = gp.predict(np.array(time[1::2]).reshape(-1, 1), return_cov = True)
-	# mean = np.squeeze(mean)
 	bottom = mean -  np.sqrt(np.diag(covariance))
 	top = mean +  np.sqrt(np.diag(covariance))
 	plt.plot(time, data, color="red")
@@ -53,7 +48,7 @@ def gradient_ascent(time, training_data, bounds, alphas):
 	sigma_f, sigma_l, sigma_n = get_random_parameters(bounds[0], bounds[1], bounds[2])
 	# sigma_f, sigma_l, sigma_n = 7, 10, 0.0067
 	params = np.array([sigma_f, sigma_l, sigma_n])
-	for i in range(10000):
+	for i in range(80):
 		gradient = compute_derivatives(time, training_data, params)
 		params = params + alphas *  gradient
 		if i % 1000 == 0:
@@ -81,7 +76,7 @@ def compute_derivatives(time, training_data, params):
 
 #returns sigma of f, l, n
 def get_random_parameters(bounda, boundb, boundc):
-	return (np.random.uniform(-bounda, bounda), np.random.uniform(-boundb, boundb), np.random.uniform(-boundc, boundc))
+	return (np.random.uniform(0, bounda), np.random.uniform(0, boundb), np.random.uniform(0, boundc))
 
 def kernel(time, sigma_f, sigma_l, sigma_n):
 	kernel = np.exp(sigma_f) * np.exp((-0.5) * np.exp(sigma_l) * get_sq_diff_mat(time))
