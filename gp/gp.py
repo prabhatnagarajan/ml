@@ -16,14 +16,14 @@ def main():
 		regression.append(i+1)
 
 	params = gradient_ascent(time[0::10], data[0::10],[0.05, 0.05, 0.03], np.array([0.0001, 0.0001, 0.00001]))
-	# params = np.array([-1.0, 0.2, 0.0067])
-	params = np.array([-0.25, 0.1, 0.0047])
+	#params = np.array([-1.0, 0.2, 0.0067])
+	params = np.array([-0.25, 0.1, 0.0067])
 	mean, covariance = gpr(time[0::10], data[0::10], time[1::2], params)
 
-	# kernel = 0.01 * RBF(length_scale = 0.05, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level = 0.0001, noise_level_bounds=(1e-10, 1e+1))
-	# gp = GaussianProcessRegressor(kernel=kernel, alpha = 0.0).fit(time[0::10].reshape(-1,1), data[0::10].reshape(-1, 1))
-	# mean, covariance = gp.predict(np.array(time[1::2]).reshape(-1, 1), return_cov = True)
-	# mean = np.squeeze(mean)
+	kernel = 0.01 * RBF(length_scale = 0.05, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level = 0.0001, noise_level_bounds=(1e-10, 1e+1))
+	gp = GaussianProcessRegressor(kernel=kernel, alpha = 0.0).fit(time[0::10].reshape(-1,1), data[0::10].reshape(-1, 1))
+	mean, covariance = gp.predict(np.array(time[1::2]).reshape(-1, 1), return_cov = True)
+	mean = np.squeeze(mean)
 	bottom = mean -  np.sqrt(np.diag(covariance))
 	top = mean +  np.sqrt(np.diag(covariance))
 	plt.plot(time, data, color="red")
@@ -49,24 +49,17 @@ def k(x1, x2, sigma_f, l):
 
 def gradient_ascent(time, training_data, bounds, alphas):
 	sigma_f, sigma_l, sigma_n = get_random_parameters(bounds[0], bounds[1], bounds[2])
-	sigma_f, sigma_l, sigma_n = -1.0, 0.2, 0.0067
+	# sigma_f, sigma_l, sigma_n = 7, 10, 0.0067
 	params = np.array([sigma_f, sigma_l, sigma_n])
-	for i in range(1):
+	for i in range(10000):
 		gradient = compute_derivatives(time, training_data, params)
 		params = params + alphas *  gradient
 		if i % 1000 == 0:
 			print "Done " + str(i)
-		# print gradient
-		# print params
-		#set_trace()
 	print "Final gradient is"
 	print gradient
 	print "Final sigmas are"
 	print params
-	# new_params = []
-	# new_params.append(np.exp(params[0]/2))
-	# new_params.append(np.exp(-params[1]/2))
-	# new_params.append(np.exp(params[2]/2))
 	return params
 
 def get_sq_diff_mat(time):
