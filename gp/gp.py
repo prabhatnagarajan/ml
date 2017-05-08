@@ -15,7 +15,9 @@ def main():
 	for i in data:
 		regression.append(i+1)
 
-	params = gradient_ascent(time[0::10], data[0::10],[0.1, 0.1, 0.03], np.array([0.005, 0.005, 0.0001]))
+	params = gradient_ascent(time[0::10], data[0::10],[0.05, 0.05, 0.03], np.array([0.0001, 0.0001, 0.00001]))
+	# params = np.array([-1.0, 0.2, 0.0067])
+	params = np.array([-0.25, 0.1, 0.0047])
 	mean, covariance = gpr(time[0::10], data[0::10], time[1::2], params)
 
 	# kernel = 0.01 * RBF(length_scale = 0.05, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level = 0.0001, noise_level_bounds=(1e-10, 1e+1))
@@ -47,8 +49,9 @@ def k(x1, x2, sigma_f, l):
 
 def gradient_ascent(time, training_data, bounds, alphas):
 	sigma_f, sigma_l, sigma_n = get_random_parameters(bounds[0], bounds[1], bounds[2])
+	sigma_f, sigma_l, sigma_n = -1.0, 0.2, 0.0067
 	params = np.array([sigma_f, sigma_l, sigma_n])
-	for i in range(500):
+	for i in range(1):
 		gradient = compute_derivatives(time, training_data, params)
 		params = params + alphas *  gradient
 		if i % 1000 == 0:
@@ -89,9 +92,10 @@ def kernel(time, sigma_f, sigma_l, sigma_n):
 	kernel = np.exp(sigma_f) * np.exp((-0.5) * np.exp(sigma_l) * get_sq_diff_mat(time))
 	noise = np.exp(sigma_n) * np.eye(len(time))
 	delta_f = kernel
+	delta_l = kernel * (-0.5) * np.exp(sigma_l) * get_sq_diff_mat(time)
 	delta_l = np.dot(kernel, (-0.5) * np.exp(sigma_l) * get_sq_diff_mat(time))
 	delta_n = noise
-	return  (kernel + noise, delta_f, delta_l, delta_n)
+	return  (kernel + sigma_n * sigma_n * np.eye(len(time)), delta_f, delta_l, delta_n)
 
 def kernel2(time, time2, sigma_f, sigma_l, sigma_n):
 	kernel = np.exp(sigma_f) * np.exp((-0.5) * np.exp(sigma_l) * get_sq_diff_mat2(time, time2))
