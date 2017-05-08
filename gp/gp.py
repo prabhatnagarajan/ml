@@ -17,7 +17,7 @@ def main():
 
 	params = gradient_ascent(time[0::10], data[0::10],[0.05, 0.05, 0.03], np.array([0.0001, 0.0001, 0.00001]))
 	#params = np.array([-1.0, 0.2, 0.0067])
-	params = np.array([-0.25, 0.1, 0.0067])
+	# params = np.array([-0.25, 0.1, 0.0067])
 	mean, covariance = gpr(time[0::10], data[0::10], time[1::2], params)
 
 	kernel = 0.01 * RBF(length_scale = 0.05, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level = 0.0001, noise_level_bounds=(1e-10, 1e+1))
